@@ -83,7 +83,7 @@ class ProManager: ObservableObject {
         }
     }
         if let url = URL(string: "https://www.theappleai.tech/pricing") {
-            NSWorkspace.shared.open(url)
+            // NSWorkspace.shared.open(url)
         }
     }
 }
