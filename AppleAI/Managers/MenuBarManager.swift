@@ -276,13 +276,14 @@ class MenuBarManager: NSObject, NSMenuDelegate, NSWindowDelegate {
         // Create a new popup window with only titlebar and close button
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 400, height: 600),
-            styleMask: [.titled, .closable],
+            styleMask: [.titled, .closable, .resizable],
             backing: .buffered,
             defer: false
         )
         
         // Configure the window
         window.title = "AppleAi Pro"
+        window.setFrameAutosaveName("MainChatWindow")
         window.isReleasedWhenClosed = false // Important: Don't release window when closed
         
         // Set initial window level based on preference
@@ -439,13 +440,14 @@ class MenuBarManager: NSObject, NSMenuDelegate, NSWindowDelegate {
             // Create a new popup window with only titlebar and close button
             let window = NSWindow(
                 contentRect: NSRect(x: 0, y: 0, width: 400, height: 600),
-                styleMask: [.titled, .closable],
+                styleMask: [.titled, .closable, .resizable],
                 backing: .buffered,
                 defer: false
             )
             
             // Configure the window
             window.title = "AppleAi Pro"
+        window.setFrameAutosaveName("MainChatWindow")
             window.isReleasedWhenClosed = false // Important: Don't release window when closed
             
             // Set initial window level based on preference
@@ -584,7 +586,7 @@ class MenuBarManager: NSObject, NSMenuDelegate, NSWindowDelegate {
         // Create a new window with non-standard close behavior
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 400, height: 300),
-            styleMask: [.titled, .closable],
+            styleMask: [.titled, .closable, .resizable],
             backing: .buffered,
             defer: false
         )

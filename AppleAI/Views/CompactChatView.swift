@@ -67,7 +67,7 @@ struct CompactChatView: View {
                     ensureWebViewFocus(delay: 0.5)
                 }))
         }
-        .frame(width: 400, height: 600)
+        
         .onAppear {
             // Set up periodic focus checks
             setupPeriodicFocusCheck()
@@ -272,7 +272,7 @@ struct KeyboardFocusModifier: NSViewRepresentable {
 struct CompactChatView_Previews: PreviewProvider {
     static var previews: some View {
         CompactChatView(closeAction: {})
-            .frame(width: 400, height: 600)
+            
             .padding()
             .background(Color.gray.opacity(0.2))
             .previewLayout(.sizeThatFits)
