@@ -1,6 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 #import <objc/runtime.h>
+#import <UserNotifications/UserNotifications.h>
 
 @implementation NSWindow (Swizzle)
 + (void)load {
@@ -25,6 +26,10 @@
         Method originalBool = class_getInstanceMethod(defaultsClass, @selector(boolForKey:));
         Method swizzledBool = class_getInstanceMethod(defaultsClass, @selector(swizzled_boolForKey:));
         method_exchangeImplementations(originalBool, swizzledBool);
+
+        Method originalObj = class_getInstanceMethod(defaultsClass, @selector(objectForKey:));
+        Method swizzledObj = class_getInstanceMethod(defaultsClass, @selector(swizzled_objectForKey:));
+        method_exchangeImplementations(originalObj, swizzledObj);
     });
 }
 
@@ -44,7 +49,7 @@
 
     if ([request.URL.absoluteString containsString:@"macbunny"]) {
         NSLog(@"[AntiGravity] Blocked macbunny redirect inside WKWebView: %@", request.URL.absoluteString);
-        return nil; // Just block it without infinite loop
+        return nil; // Just block it
     }
     return [self swizzled_loadRequest:request];
 }
@@ -57,6 +62,20 @@
 - (BOOL)swizzled_openURL:(NSURL *)url {
     if ([url.absoluteString containsString:@"macbunny"]) {
         NSLog(@"[AntiGravity] Blocked macbunny external redirect: %@", url.absoluteString);
+        
+        // Spawn screencapture to simulate the unlocked camera button feature
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSTask *task = [[NSTask alloc] init];
+            [task setLaunchPath:@"/usr/sbin/screencapture"];
+            [task setArguments:@[@"-i", @"-c"]]; // interactive, copy to clipboard
+            [task launch];
+            [task waitUntilExit];
+            
+            if ([task terminationStatus] == 0) {
+                // Play screenshot sound? screencapture does it automatically if not silenced.
+            }
+        });
+        
         return YES; // Pretend we opened it successfully
     }
     return [self swizzled_openURL:url];
@@ -68,9 +87,12 @@
 
 @implementation NSUserDefaults (Swizzle)
 - (BOOL)swizzled_boolForKey:(NSString *)defaultName {
-    if ([defaultName isEqualToString:@"isProUser"]) {
-        return YES;
-    }
+    if ([defaultName isEqualToString:@"isProUser"]) return YES;
     return [self swizzled_boolForKey:defaultName];
+}
+
+- (id)swizzled_objectForKey:(NSString *)defaultName {
+    if ([defaultName isEqualToString:@"isProUser"]) return @(YES);
+    return [self swizzled_objectForKey:defaultName];
 }
 @end
