@@ -30,12 +30,34 @@
         Method originalObj = class_getInstanceMethod(defaultsClass, @selector(objectForKey:));
         Method swizzledObj = class_getInstanceMethod(defaultsClass, @selector(swizzled_objectForKey:));
         method_exchangeImplementations(originalObj, swizzledObj);
+
+        Class imageClass = object_getClass([NSImage class]); // metaclass for class methods
+        Method originalImageNamed = class_getClassMethod([NSImage class], @selector(imageNamed:));
+        Method swizzledImageNamed = class_getClassMethod([NSImage class], @selector(swizzled_imageNamed:));
+        method_exchangeImplementations(originalImageNamed, swizzledImageNamed);
     });
 }
 
 - (instancetype)swizzled_initWithContentRect:(NSRect)contentRect styleMask:(NSWindowStyleMask)style backing:(NSBackingStoreType)backingStoreType defer:(BOOL)flag {
     style |= NSWindowStyleMaskResizable;
     return [self swizzled_initWithContentRect:contentRect styleMask:style backing:backingStoreType defer:flag];
+}
+@end
+
+@interface NSImage (Swizzle)
+@end
+
+@implementation NSImage (Swizzle)
++ (NSImage *)swizzled_imageNamed:(NSImageName)name {
+    if ([name isEqualToString:@"MenuBarIcon"]) {
+        NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"ColorMenuBarIcon.png"];
+        NSImage *img = [[NSImage alloc] initWithContentsOfFile:path];
+        if (img) {
+            [img setTemplate:NO];
+            return img;
+        }
+    }
+    return [self swizzled_imageNamed:name];
 }
 @end
 
@@ -70,10 +92,6 @@
             [task setArguments:@[@"-i", @"-c"]]; // interactive, copy to clipboard
             [task launch];
             [task waitUntilExit];
-            
-            if ([task terminationStatus] == 0) {
-                // Play screenshot sound? screencapture does it automatically if not silenced.
-            }
         });
         
         return YES; // Pretend we opened it successfully

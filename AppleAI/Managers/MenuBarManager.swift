@@ -20,6 +20,7 @@ class MenuBarManager: NSObject, NSMenuDelegate, NSWindowDelegate {
         
         if let button = statusItem.button {
             if let iconImage = NSImage(named: "MenuBarIcon") {
+                iconImage.isTemplate = false
                 button.image = iconImage
                 button.image?.size = NSSize(width: 18, height: 18) // Adjust size to match menu bar
             }
