@@ -571,7 +571,7 @@ class WebViewCache: NSObject, ObservableObject, WKNavigationDelegate, WKUIDelega
         
         // Create the web view
         let webView = WKWebView(frame: .zero, configuration: configuration)
-        webView.customUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        if service.url.absoluteString.contains("gemini.google.com") { webView.customUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15" }
         webView.navigationDelegate = self
         webView.uiDelegate = self
         
